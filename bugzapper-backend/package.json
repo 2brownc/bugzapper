@@ -1,0 +1,17 @@
+{
+  "name": "bugzapper-frontend",
+  "version": "1.0.0",
+  "description": "Bugzapper is a powerful ticket tracking application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ticket",
+    "tracking",
+    "bug",
+    "bugzapper"
+  ],
+  "author": "Brown Chinta",
+  "license": "AGPL-3.0-or-later"
+}
