@@ -1,106 +1,27 @@
 import mongoose from 'mongoose';
-import dotenv from "dotenv";
 
 import {
-  authorization,
-  user,
-  project,
-  role,
-  ticket,
   comment,
-  ticketPriority
+  project,
+  ticket,
+  user
 } from '../../types/types';
 import { authorizationsSampleData } from './authorization';
-import { usersSampleData } from './users';
 import { projectsSampleData } from './projects';
 import {
-  ticketsProjectCosmos,
-  ticketsFoodzillaApp,
-  ticketsHealthTrack,
-  ticketsGreenerEnergyInitiative,
-  ticketsSchoolConnect,
-  ticketsVibe,
-  ticketsVerge,
   ticketsAscend,
-  ticketsPulse
+  ticketsFoodzillaApp,
+  ticketsGreenerEnergyInitiative,
+  ticketsHealthTrack,
+  ticketsProjectCosmos,
+  ticketsPulse,
+  ticketsSchoolConnect,
+  ticketsVerge,
+  ticketsVibe
 } from './tickets';
-
-dotenv.config();
-
-// get random user from the UsersList
-const getUsersIdsByRole = (userList: user[], role: role): mongoose.Types.ObjectId[] => {
-  const usersOfRole = userList.filter(user => user.role == role);
-  return usersOfRole.map(user => user._id as mongoose.Types.ObjectId);
-};
-
-const getRandomUserId = (userList: any[]): mongoose.Types.ObjectId => {
-  return userList[Math.floor(Math.random() * userList.length)]._id as mongoose.Types.ObjectId;
-};
-
-const getNRandomUserIds = (userList: any[], limit: number): mongoose.Types.ObjectId[] => {
-  // return all the users if limit is greater than the number of users
-  if (limit > userList.length) {
-    return userList as mongoose.Types.ObjectId[];
-  }
-
-  const shuffledArr = [...userList].sort(() => Math.random() - 0.5);
-  return shuffledArr.slice(0, limit) as mongoose.Types.ObjectId[];
-};
-
-// Connect to MONGODB
-
-const MONGODB_URL = process.env.MONGODB_APIENDPOINT;
-if (MONGODB_URL) {
-  main(MONGODB_URL).catch(err => console.log(err));
-} else {
-  throw new Error("MONGODB_APIENDPOINT not set");
-}
-
-async function main(MONGODB_URL: string) {
-  await mongoose.connect(MONGODB_URL);
-}
-
-const AuthorizationModel = mongoose.model<authorization>('Authorization', new mongoose.Schema({
-  permission: String,
-  authorized: [String]
-}));
-
-const UserModel = mongoose.model<user>('User', new mongoose.Schema({
-  _id: mongoose.Types.ObjectId,
-  name: String,
-  email: String,
-  role: String,
-  suspended: Boolean,
-}));
-
-const ProjectModel = mongoose.model<project>('Project', new mongoose.Schema({
-  _id: mongoose.Types.ObjectId,
-  name: String,
-  description: String,
-  members: [mongoose.Types.ObjectId],
-  manager: mongoose.Types.ObjectId,
-  created_at: Date,
-  updated_at: Date,
-  archived: Boolean
-}));
-
-const TicketModel = mongoose.model<ticket>('Ticket', new mongoose.Schema({
-  _id: mongoose.Types.ObjectId,
-  title: String,
-  description: String,
-  project: mongoose.Types.ObjectId,
-  eta: {
-    type: Date,
-    defaul: null
-  },
-  author: mongoose.Types.ObjectId,
-  comments: Object,
-  priority: String,
-  status: String,
-  tags: [String],
-  created_at: Date,
-  updated_at: Date,
-}));
+import { usersSampleData } from './users';
+import { getNRandomUserIds, getRandomUserId, getUsersIdsByRole } from './utils';
+import { AuthorizationModel, UserModel, ProjectModel, TicketModel } from "../dbconnect";
 
 export async function initDB() {
   // Create the Permissions
@@ -159,7 +80,7 @@ export async function initDB() {
     const setUsersForTickets = (tickets: ticket[]): ticket[] => {
       const ticketData: ticket[] = [];
       for (const ticket of tickets) {
-        const commentData = [];
+        const commentData: comment[] = [];
         for (const comment of ticket.comments) {
           commentData.push({
             ...comment,
